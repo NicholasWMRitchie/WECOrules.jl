@@ -17,14 +17,32 @@ A process is deemed out-of-control if:
 
   where the nominal value is the value deemed optimal for a measured property of the process.  One standard deviation is determined from prior observations of the process.
 
-    weco(df::DataFrame, nominal::Real, onesigma::Real; timestamp=:Date, value=:Value, result::Union{Missing,Function}=missing)::DataFrame
+    weco(
+      df::DataFrame, 
+      nominal::Real, 
+      onesigma::Real; 
+      timestamp=:Date, 
+      value=:Value, 
+      result::Union{Missing,Function}=missing
+    )::DataFrame
 
   * The package takes a `DataFrames` package `DataFrame` containing time-sequence data.
   * The `nominal` and `onesigma` values are specified.
   * The `timestamp` data is by default in the `:Date` column
   * The `value` data is by default in the `:Value` column
-  * The `result` argument can be a function that can compute an optional 9th column with a go/no go decision based on the previous eight rule columns.  The function takes a `DataFrame` row argument and can be based on any data in `df` or the `:Rule?` columns.
+  * The `result` argument can be a function that can compute an optional 9th column with a go/no go decision based on the previous eight rule columns.  The function takes a `DataFrame` row argument and can be based on any data in `df` or the `:Rule?` columns.  The default result function returns true if all the rules evaluate true and false otherwise.
 
  The method creates a new `DataFrame` with eight additional `Union{Boolean,Missing}` columns - one for each of the tests called `:Rule1`, `:Rule2`, ..., `:Rule8`.  The columns contain `true` if the data point in the row datum is "in control" according to the rule and `false` if the row is "out-of-control" according to the rule.  If there is a reason, the rule can't be evaluated then the value will be `missing`.
 
- 
+If Gadfly has been imported then the method `shewhart(...)` will plot a Shewhart-like control chart.
+
+    shewhart(
+      df::AbstractDataFrame, # DataFrame containing columns :Date & :Value (or below)
+      nominal::Real, # Nominal value for :Value column
+      onesigma::Real; # Nominal 1σ variation in :Value column
+      timestamp::Union{Symbol,AbstractString}=:Date, # Alternative to :Date
+      value::Union{Symbol,AbstractString}=:Value, # Alternative to :Value
+      result::Union{Missing,Function}=missing
+    )
+
+The plot method first calls `weco(df,...)` to apply the rules.  It plots "passing" data points in green, "failing" in red according to the `result` function.  It also plots yellow horizontal lines at the nominal±2σ level and red horizontal lines at the nominal±3σ levels.

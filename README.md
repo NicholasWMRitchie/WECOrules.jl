@@ -1,6 +1,6 @@
-# WECOrules
+# WECOrules.jl
 
-Implements the Western Electric Company's eight rules for detecting process change.  The rules are used along with control charts to determine whether a process remains under control.
+A Julia package that implements the Western Electric Company's eight rules for detecting process change. In statistical quality control, these rules are often used along with control charts to determine whether an industrial process remains nominally within process control limits.  Failures are deemed to be reasons to investigate and resolve potential problems with the industrial process.
 
 ## The Eight Rules
 

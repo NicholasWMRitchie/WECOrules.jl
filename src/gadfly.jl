@@ -9,12 +9,6 @@ function shewhart(
     result::Union{Missing,Function}=missing
 )
     res = weco(df,nominal,onesigma,timestamp=timestamp, value=value, result=result)
-    ranges = DataFrame(
-        :ymax => ( 3*onesigma, 2*onesigma, 1*onesigma, -1*onesigma, -2*onesigma ), 
-        :ymin => ( 2*onesigma, 1*onesigma, -1*onesigma, -2*onesigma, -3*onesigma ),
-        :color => ( "pink", "khaki1", "lightgreen", "khaki1", "pink")
-    )
-    #Geom.hline[(; color=nothing, size=nothing, style=nothing)]
     plot(
         layer(yintercept=[3*onesigma, -3*onesigma].+nominal, Geom.hline(color="red")),
         layer(yintercept=[2*onesigma, -2*onesigma].+nominal, Geom.hline(color="yellow")),

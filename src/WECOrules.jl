@@ -64,7 +64,9 @@ function weco(
         rule5 = map(eachrow(res)) do r
             push!(cb5p, r[value]-nominal > 2*onesigma)
             push!(cb5n, r[value]-nominal < -2*onesigma)
-            isfull(cb5p) ? !(count(cb5p) >= 2 || count(cb5n) >= 2) : missing
+            # Don't call point if it is intolerance but follows two out-of-tolerance
+            outside = abs(r[value]-nominal) > 2*onesigma 
+            isfull(cb5p) ? !(outside && (count(cb5p) >= 2 || count(cb5n) >= 2)) : missing
         end
         insertcols!(res, :Rule5 => rule5)
     end
@@ -74,11 +76,13 @@ function weco(
         rule6 = map(eachrow(res)) do r
             push!(cb6p, r[value]-nominal > onesigma)
             push!(cb6n, r[value]-nominal < -onesigma)
-            isfull(cb6p) ? !(count(cb6p) >= 4 || count(cb6n) >= 4) : missing
+            # Don't call point if it is intolerance but follows four out-of-tolerance
+            outside = abs(r[value]-nominal) > onesigma
+            isfull(cb6p) ? !(outside && (count(cb6p) >= 4 || count(cb6n) >= 4)) : missing
         end
         insertcols!(res, :Rule6 => rule6)
     end
-    # 7) Fifteen data points within one standard deviaiton of the nominal value.
+    # 7) Fifteen data points within one standard deviation of the nominal value.
     begin
         cb7 = CircularBuffer{Bool}(15)
         rule7 = map(eachrow(res)) do r

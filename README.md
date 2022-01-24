@@ -30,9 +30,15 @@ A process is deemed out-of-control if:
   * The `nominal` and `onesigma` values are specified.
   * The `timestamp` data is by default in the `:Date` column
   * The `value` data is by default in the `:Value` column
-  * The `result` argument can be a function that can compute an optional 9th column with a go/no go decision based on the previous eight rule columns.  The function takes a `DataFrame` row argument and can be based on any data in `df` or the `:Rule?` columns.  The default result function returns true if all the rules evaluate true and false otherwise.
+  * The `result` argument can be a function that can compute an optional 9th column with a go/no go decision based on the previous eight rule columns.  The function takes a `DataFrame` row argument and can be based on any data in `df` or the `:Rule?` columns.  The default result function returns true if all the rules evaluate true or missing and false otherwise.
 
- The method creates a new `DataFrame` with eight additional `Union{Boolean,Missing}` columns - one for each of the tests called `:Rule1`, `:Rule2`, ..., `:Rule8`.  The columns contain `true` if the data point in the row datum is "in control" according to the rule and `false` if the row is "out-of-control" according to the rule.  If there is a reason, the rule can't be evaluated then the value will be `missing`.
+Example result function:
+
+    mot(v) = ismissing(v) || v
+    allrules(r) = all(mot.((r[:Rule1], r[:Rule2], r[:Rule3], r[:Rule4], r[:Rule5], r[:Rule6], r[:Rule7], r[:Rule8])))
+
+
+ The method creates a new `DataFrame` with eight additional `Union{Boolean,Missing}` columns - one for each of the tests called `:Rule1`, `:Rule2`, ..., `:Rule8`.  The columns contain `true` if the data point in the row datum is "in control" according to the rule and `false` if the row is "out-of-control" according to the rule.  If there is a reason that the rule can't be evaluated then the value will be `missing`.
 
 If Gadfly has been imported then the method `shewhart(...)` will plot a Shewhart-like control chart.
 

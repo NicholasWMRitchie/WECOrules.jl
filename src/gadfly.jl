@@ -26,22 +26,24 @@ function shewhart(
     timestamp::Union{Symbol,AbstractString}=:Date, # Alternative to :Date
     value::Union{Symbol,AbstractString}=:Value, # Alternative to :Value
     result::Union{Missing,Function}=missing,
-    color::Bool=true # Use colors vs only black and white
+    color::Bool=true, # Use colors vs only black and white
+    title::Union{AbstractString,Nothing}=nothing,
 )
     res = weco(df,nominal,onesigma,timestamp=timestamp, value=value, result=result)
+    gt = isnothing(title) ? [] : [ Guide.title(title) ]
     if color
         plot(
             layer(yintercept=[3*onesigma, -3*onesigma].+nominal, Geom.hline(color="red")),
             layer(yintercept=[2*onesigma, -2*onesigma].+nominal, Geom.hline(color="yellow")),
             layer(res, x=timestamp, y=value, color=:Passes, Geom.point),
-            Scale.color_discrete_manual("lime", "firebrick", levels = [ true, false ]),
+            Scale.color_discrete_manual("lime", "firebrick", levels = [ true, false ]), gt...
         )
     else
         plot(
             layer(yintercept=[3*onesigma, -3*onesigma].+nominal, Geom.hline(color="gray50", style=:dash)),
             layer(yintercept=[2*onesigma, -2*onesigma].+nominal, Geom.hline(color="gray50", style=:dot)),
             layer(res, x=timestamp, y=value, color=:Passes, Geom.point, Theme(discrete_highlight_color=c->"gray50")),
-            Scale.color_discrete_manual("gray80", "black", levels = [ true, false ])
+            Scale.color_discrete_manual("gray80", "black", levels = [ true, false ]), gt...
         )
     end
 end

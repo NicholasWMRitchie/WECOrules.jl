@@ -29,7 +29,8 @@ function shewhart(
     color::Bool=true, # Use colors vs only black and white
     title::Union{AbstractString,Nothing}=nothing,
 )
-    res = weco(df,nominal,onesigma,timestamp=timestamp, value=value, result=result)
+    df = sort(df, timestamp)
+    res = weco(df, nominal, onesigma, timestamp=timestamp, value=value, result=result)
     gt = isnothing(title) ? [] : [ Guide.title(title) ]
     if color
         plot(

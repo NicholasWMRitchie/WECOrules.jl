@@ -87,7 +87,7 @@ function weco(
         rule5 = map(eachrow(res)) do r
             push!(cb5p, r[value]-nominal > 2*onesigma)
             push!(cb5n, r[value]-nominal < -2*onesigma)
-            # Don't call point if it is intolerance but follows two out-of-tolerance
+            # Don't call point if it is in tolerance but follows two out-of-tolerance
             outside = abs(r[value]-nominal) > 2*onesigma 
             isfull(cb5p) ? !(outside && (count(cb5p) >= 2 || count(cb5n) >= 2)) : missing
         end
